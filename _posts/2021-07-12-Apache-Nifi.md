@@ -1,7 +1,7 @@
 ---
 title: Tìm hiểu về Apache Nifi
 author: viethoang
-date: 2021-07-12 20:52:00 +0700
+date: 2121-07-12 20:52:00 +0700
 categories: [Blogging, Share]
 tags: [Big data,Data Ingestion,Apache Nifi]
 math: true

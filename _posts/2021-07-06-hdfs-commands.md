@@ -1,7 +1,7 @@
 ---
 title: Các câu lệnh thao tác với file và thư mục trên HDFS 
 author: trannguyenhan
-date: 2021-07-06 16:00:00 +0700
+date: 2121-07-06 16:00:00 +0700
 categories: [Hadoop & Spark, Hadoop]
 tags: [Hadoop, Apache Hadoop, Bigdata, HDFS]
 math: true

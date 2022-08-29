@@ -1,6 +1,6 @@
 Welcome to my team website : https://demanejar.github.io/ ![](https://img.shields.io/badge/license-MIT-green)
 ---
-Create personal website with Jekyll : https://github.com/cotes2020/jekyll-theme-chirpy, A website about Bigdata & Technology from Demanejar team (Vietnamese Language Blogs)
+Create personal website with Jekyll : https://github.com/cotes2020/jekyll-theme-chirpy, A website about Bigdata & Technology from Demanejar team (English Language Blogs)
 
 ## Demo 
 

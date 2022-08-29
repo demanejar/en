@@ -25,7 +25,7 @@ description: >-                        # used by seo meta and the atom feed
   writen by team Demanejar.
   
 # fill in the protocol & hostname for your site, e.g., 'https://username.github.io'
-url: 'https://demanejar.github.io/en'
+url: 'https://demanejar.github.io'
 
 github:
   username: demanejar             # change to your github username

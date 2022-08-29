@@ -1,16 +1,16 @@
-name: 'CI'
+name: 'Continuous Integration'
 on:
   push:
     branches-ignore:
-      - 'release/**'
-      - 'docs'
+      - 'production'
     tags-ignore:
-      - '**'
+      - '*'
     paths-ignore:
       - '.github/**'
       - '!.github/workflows/ci.yml'
       - '.travis.yml'
       - '.gitignore'
+      - 'docs/**'
       - 'README.md'
       - 'LICENSE'
   pull_request:
@@ -18,20 +18,30 @@ on:
       - '**'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  ci:
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        ruby: [2.5, 2.6, 2.7, 3]
+        os: [ubuntu-latest, macos-latest]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0  # for posts's lastmod
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ matrix.ruby }}
+          ruby-version: 2.7
           bundler-cache: true
+
+      - name: Build Site
+        env:
+          JEKYLL_ENV: production
+        run: |
+          bundle exec jekyll b
+
       - name: Test Site
-        run: bash tools/deploy.sh --dry-run
+        run: |
+          bash tools/test.sh

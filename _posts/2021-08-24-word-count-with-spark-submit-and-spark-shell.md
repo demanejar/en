@@ -12,7 +12,7 @@ image:
 *Wordcount cũng là một chương trình kinh điển khi nhắc tới Spark, một phần cũng là để so sánh hiệu năng với chính Hadoop MapReduce. Trong bài viết này mình sẽ hướng dẫn mọi người tạo và chạy chương trình Wordcount với spark-submit sử dụng Java và spark-shell sử dụng Scala.*
 
 ## Khởi động HDFS và Spark
-Với Spark hay Hadoop thì các bạn đều có thể chạy với file ở trên local, tuy nhiên để cho thực tế thì chúng ta sẽ sử dụng cả đầu vào và đầu ra đều đặt trên HDFS, nếu máy bạn chưa có HDFS thì hãy cài Single Node để làm quen nha: [Cài đặt và triển khai Hadoop Single Node](/posts/install-and-deploy-hadoop-single-node/)
+Với Spark hay Hadoop thì các bạn đều có thể chạy với file ở trên local, tuy nhiên để cho thực tế thì chúng ta sẽ sử dụng cả đầu vào và đầu ra đều đặt trên HDFS, nếu máy bạn chưa có HDFS thì hãy cài Single Node để làm quen nha: [Cài đặt và triển khai Hadoop Single Node](https://demanejar.github.io/posts/install-and-deploy-hadoop-single-node/)
 
 Vào thư mục chứa Hadoop và khởi động HDFS lên với câu lệnh: 
 ```bash
@@ -78,7 +78,7 @@ public class Main {
 ```
 - Tại phần `setMaster` hãy thay lại thành địa chỉ Spark Master của bạn.
 
-Chú ý: nếu chưa biết Spark-RDD là gì thì bạn có thể xem lại bài viết về Spark-RDD [TẠI ĐÂY](/posts/spark-rdd/) nha.
+Chú ý: nếu chưa biết Spark-RDD là gì thì bạn có thể xem lại bài viết về Spark-RDD [TẠI ĐÂY](https://demanejar.github.io/posts/spark-rdd/) nha.
 
 ### Bước 2
 Để chạy project với spark-submit thì chúng ta phải build project thành file `.jar`, sử dụng `mvn` để build project thành file `.jar` như sau: 

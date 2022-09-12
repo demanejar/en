@@ -1,7 +1,7 @@
 ---
-title: Các câu lệnh thao tác với file và thư mục trên HDFS 
+title: Commands for manipulating files and directories on HDFS
 author: trannguyenhan
-date: 2121-07-06 16:00:00 +0700
+date: 2021-07-06 16:00:00 +0700
 categories: [Hadoop & Spark, Hadoop]
 tags: [Hadoop, Apache Hadoop, Bigdata, HDFS]
 math: true
@@ -9,84 +9,106 @@ mermaid: true
 image:
   src: https://i.pinimg.com/originals/de/61/7d/de617d1ce71f621bbeba8b293996e9fc.jpg
 ---
-Các câu lệnh trên HDFS nhìn chung khá là giống với các câu lệnh trên Linux kể cả về chức năng lẫn tên của chúng, nếu bạn nào đã quen với Linux/Ubuntu rồi thì chắc cũng không cần phải học gì nhiều đâu, cứ thế áp dụng vào thôi.
+The commands on HDFS are generally quite similar to the commands on Linux, both in terms of their functions and names, if you are familiar with Linux/Ubuntu then you probably don't need to learn much, so apply. just use it.
 
-### help : 
-Muốn xin sự trợ giúp về common line trong HDFS : 
+### help
+
+Ask about common line in HDFS :
+
 ```bash
 hdfs dfs -help
 hdfs dfs -usege <utility_name>
 ```
 
-Xin sự trợ giúp về 1 lệnh cụ thể nào đó : 
+Ask about a specific command:
+
 ```bash
 hdfs dfs -help <statement>
 VD: hdfs dfs -help ls
 ```
 
 ### mkdir
-Tạo folder trong HDFS : 
+
+Make folder in HDFS:
+
 ```bash
 hdfs dfs -mkdir /newfolder
 ```	
 
-Nếu muốn tạo thư mục ngay cả khi nó đã tồn tại thì thêm tham số : 
+Make folder if this already exists, add parameter:
+
 ```bash
 hdfs dfs -mkdir -p /newfolder
 ```
 
 ### ls
-Kiểm tra các thư mục có trong hệ thống : 
+
+Display folder and file in directory:
+
 ```bash
 hdfs dfs -ls /
 ```
 
-Muốn kiểm tra tất cả các thư mục con chứa trong hdfs thì sử dụng câu lệnh : 
+Display folder and file in directory and all subfolder in this:
+
 ```bash
 hdfs dfs -ls -R /
 ```
 
-### put 
-Sử dụng lệnh put để copy 1 file từ thư mục local vào hdfs : 
+### put
+
+Copy file from local folder to HDFS folder:
+
 ```bash
 hdfs dfs -put ~/test.txt /newfolder/
 hdfs dfs -copyFromLocal ~/test.txt /newfolder/
 ```
 
 ### get
-Sử dụng lệnh để lấy 1 file từ hdfs về thư mục local : 
-```
+
+Copy file from HDFS folder to local folder:
+
+```bash
 hdfs dfs -get /newfolder/test.txt /copyfromhdfs/
 hdfs dfs -copyToLocal /newfolder/test.txt /copyfromhdfs/
 ```
 
 ### cat
-Kiểm tra nội trung trong file : 
+
+Check content in file:
+
 ```bash
 hdfs dfs -cat /newfolder/test.txt
 ```
 
 ### mv
-Chuyển file hoặc cả thư mục từ thư mục này sang thư mục khác : 
+
+Move file or folder from folder to folder:
+
 ```bash
 hdfs dfs -mv /newfolder /DR
 ```
 
 ### cp
-Giống mv nhưng là copy :
+
+Copy file or folder from folder to folder:
+
 ```bash
 hdfs dfs -cp /DR/newfolder/test.txt /DR
 ```
 
-### rm 
-Xóa 1 file trong hdfs : 
+### rm
+
+Delete file in HDFS:
+
 ```bash
-hdfs dfs -rm /DR/test.txt	
+hdfs dfs -rm /DR/test.txt
 ```
 
 ### getmerge
-Gộp các file trên hdfs và tải về local : 
+
+Merge file in HDFS and download to local:
+
 ```bash
 hdfs dfs -getmerge /usr/trannguyenhan /home/trannguyenhan01092000/output.dat
 ```
-	

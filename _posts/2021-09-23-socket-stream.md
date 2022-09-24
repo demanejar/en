@@ -1,7 +1,7 @@
 ---
-title: Project Socket Stream với Spark Streaming
+title: Project Socket Stream with Spark Streaming
 author: trannguyenhan 
-date: 2121-09-23 20:52:00 +0700
+date: 2021-09-23 20:52:00 +0700
 categories: [Hadoop & Spark, Spark]
 tags: [Spark Streaming, Bigdata, Spark]
 math: true
@@ -9,13 +9,15 @@ mermaid: true
 image:
   src: https://raw.githubusercontent.com/demanejar/image-collection/main/SparkStreaming/streaming-arch.png
 ---
-*Trong bài viết này chúng ta sẽ đi xét một ví dụ nhỏ với Spark Streaming. Công việc của chúng ta là tạo một project với Spark Streaming lắng nghe ở cổng 7777 và lọc những dòng có chứa từ "error" rồi in chúng ra.* 
 
-## Chuẩn bị Project
+*In this post, we consider a small example with Spark Streaming. My work is creating a project with Spark Streaming listen in port 7777 and filter line contain "error" word and print it to console.*
 
-Project rất đơn giản, được viết bằng Scala. Bạn có thể xem toàn bộ project tại đây: [https://github.com/demanejar/socket-stream](https://github.com/demanejar/socket-stream), mọi người clone project về để chuẩn bị chạy nha.
+## Project preparation
 
-Trong project có 2 file chính, một là file `SocketStream.scala`: 
+This is a simple project write by Scala. You can see all project in [https://github.com/demanejar/socket-stream](https://github.com/demanejar/socket-stream), please clone this project to your local before run it.
+
+There are 2 main file in this project, first is `SocketStream.scala` file:
+
 ```scala
 import org.apache.spark._
 import org.apache.spark.SparkContext._
@@ -38,11 +40,10 @@ object SocketStream {
 }
 ```
 
-- Nếu bạn chạy cụm nhiều máy, hãy đổi lại hostname của bạn từ `localhost` thành địa chỉ IP máy master của bạn nha
-- File này có nhiệm vụ là tạo một `StreamingContext` lắng nghe ở cổng 7777, lọc những dòng có chứa từ `error` và in chúng ra màn hình.
-- Đây là lần đầu tiên mình minh họa Spark với Scala, với những lần trước mình đều minh họa bằng mã Java. Các bạn có thể thấy Scala hao hao giống với Java xong lại có cách viết thì giống với Python. Scala nó như là ngôn ngữ sinh ra để cho Spark rồi ấy, thế nên là ngôn ngữ này có rất nhiều những cái hỗ trợ khi bạn dùng nó để code Spark. 
+- If you run project in cluster with multi node, change hostname from `localhost` to master node IP.
+- The task of this file is creating `StreamingContext` listening in port 7777, filter line contain `error` word and print it to console.
 
-File còn lại là file `build.sbt`: 
+The remaining file is `build.sbt`:
 
 ```sbt
 name := "socket-stream"
@@ -54,16 +55,16 @@ libraryDependencies ++= Seq(
 )
 ```
 
-- Để có thể submit job này với spark-submit thì bạn phải build chúng thành một file `.jar`, với scala thì chúng ta sẽ sử dụng `sbt`
-- Nếu máy bạn chưa có `sbt` có thể tham khảo cách cài đặt tại đây: [https://www.scala-sbt.org/download.html](https://www.scala-sbt.org/download.html)
+- We must build project to file `.jar` before submit it to Spark cluster with spark-submit.
+- If your computer no install `sbt`, you can refer how to install `sbt` in [https://www.scala-sbt.org/download.html](https://www.scala-sbt.org/download.html).
 
-## Chạy Project và xem kết quả
+## Run project and see result
 
-Khởi động Spark và kiểm tra địa chỉ của master thông qua cổng 8080 (`spark://PC0628:7077`): 
+Start Spark and check status via UI address of master node in port 8080 (`spark://PC0628:7077`):
 
 ![](https://raw.githubusercontent.com/demanejar/image-collection/main/SocketStream/socket_stream.png)
 
-Build project vừa rồi thành file `.jar` với câu lệnh dưới đây, lần đầu build có thể các bạn sẽ phải đợi khá lâu vì nó phải tải xuống các thư viện, trong các lần build sau sẽ nhanh hơn: 
+Build project to `.jar` file with `sbt` command:
 
 ```bash
 sbt clean package
@@ -71,28 +72,29 @@ sbt clean package
 
 ![](https://raw.githubusercontent.com/demanejar/image-collection/main/SocketStream/sbt_clean_package.png)
 
-Chạy spark-submit với file jar vừa bulid được: 
-```
+Run spark-submit with `.jar` file just create:
+
+```bash
 spark-submit --master spark://PC0628:7077 --class SocketStream target/scala-2.11/socket-stream_2.11-0.0.1.jar
 ```
 
-- Tham số `master` là địa chỉ của master mà bạn vừa lấy ở bên trên
-- Tham số `class` là đường dẫn tới hàm main của project
+- `master` is address of master node
+- `class` is path to main function of project
 
-Mở một terminal khác lên và chạy lệnh sau để bắt đầu gửi text qua cổng 7777: 
+Open other terminal and run command below to start sending text through port 7777:
 
-```
+```bash
 nc -l 7777
 ```
 
-Kết quả in ra màn hình và sẽ vụt qua rất nhanh: 
+Result in console is very fast:
 
 ![](https://raw.githubusercontent.com/demanejar/image-collection/main/SocketStream/result_1.png)
 
 ![](https://raw.githubusercontent.com/demanejar/image-collection/main/SocketStream/result_2.png)
 
-Mở cổng 4040 để xem lại chi tiết các job vừa thực hiện (`localhost:4040`): 
+Open port 4040 to see again detail job just done (`localhost:4040`): 
 
 ![](https://raw.githubusercontent.com/demanejar/image-collection/main/SocketStream/4040.png)
 
-Tham khảo: sách Learning Spark - Zaharia M., et al. (trang 184)
+Refer: Learning Spark - Zaharia M., et al. (trang 184)

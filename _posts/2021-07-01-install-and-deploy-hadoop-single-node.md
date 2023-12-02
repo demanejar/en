@@ -1,7 +1,7 @@
 ---
-title: Cài đặt và triển khai Hadoop single node 
+title: Install and deploy Hadoop single node 
 author: trannguyenhan
-date: 2121-07-01 16:00:00 +0700
+date: 2021-07-01 16:00:00 +0700
 categories: [Hadoop & Spark, Hadoop]
 tags: [Hadoop, Apache Hadoop, Bigdata, HDFS, Hadoop Yarn]
 math: true
@@ -9,70 +9,77 @@ mermaid: true
 image:
   src: https://i.pinimg.com/originals/4a/3c/14/4a3c144fa89a85fd6dbccc07bdb8509a.jpg
 ---
-*Mỗi ngành công nghiệp lớn đang triển khai Apache Hadoop là khung tiêu chuẩn để xử lý và lưu trữ dữ liệu lớn. Hadoop được thiết kế để được triển khai trên một mạng lưới hàng trăm hoặc thậm chí hàng ngàn máy chủ chuyên dụng. Tất cả các máy này làm việc cùng nhau để đối phó với khối lượng lớn và nhiều bộ dữ liệu khổng lồ*
 
-**_Xem thêm_** : [Giới thiệu tổng quan Hadoop](https://demanejar.github.io/posts/hadoop-introduction/)
+*Every major industry is implementing Apache Hadoop as the standard framework for big data processing and storage. Hadoop is designed to be deployed across a network of hundreds or even thousands of dedicated servers. All these machines work together to deal with large volumes and huge data sets*
+
+**_See more_** : [Overview of Hadoop](https://demanejar.github.io/posts/hadoop-introduction/)
 
 ![](https://1.bp.blogspot.com/-ptS_AgcV35I/YGGKkXVYm3I/AAAAAAAABTI/xWehG7DKqlYMgKDw9lxBpd9pJXFd8-kgACLcBGAsYHQ/s770/hadoop.logo_.tr_.jpg)
 
-Hadoop mạnh mẽ và hữu dụng chỉ khi được cài đặt và khai thác nó trên nhiều node, tuy nhiên với người bắt đầu thì Hadoop Single node là sự khởi đầu tuyệt vời để làm quen với hadoop. Bài viết này mình sẽ hướng dẫn các bạn triển khai Hadoop trên 1 node ( Hadoop Single node).
+Hadoop is powerful and useful only when installed and exploited on multiple nodes, but for beginners, Hadoop Single node is a great start to get acquainted with hadoop. In this article, I will guide you to deploy Hadoop on 1 node (Hadoop Single node).
 
-#### Điều kiện trước khi cài : 
+#### Conditions before installation
 
-*   Máy bạn phải có jdk ( bản 8, 11 hay 15 đều được, lưu ý nếu bạn dùng hadoop 3.1.4 thì có thể dùng bản jdk8, còn nếu dùng hadoop 3.2.2 trở lên thì hãy sử dụng java11 trở lên), nếu chưa có thì bạn có thể cài theo câu lệnh sau : 
+*   Your device must have jdk (version 8, 11 or 15 is fine, note that if you use hadoop 3.1.4, you can use jdk8, but if you use hadoop 3.2.2 or higher, use Java 11 or higher), if If not, you can install it with the following command:
+
 ```bash
 sudo apt-get install openjdk-11-jdk -y
 ```
 
-*   Máy có SSH client và SSH server, nếu chưa có thì bạn có thể cài theo câu lệnh sau : 
+*   Your computer has SSH client and SSH server. If you don't have it, you can install it with the following command:
+
 ```bash
 sudo apt-get install openssh-server openssh-client -y
 ```
 
+## Set up User for Hadoop
 
-## Thiết lập User cho Hadoop
-Thường mình thấy một nhiều trang hướng dẫn các bạn tạo một user mới trên Ubuntu và cài Hadoop trên đó nhưng qua trải nhiệm của mình thì cài Single Node chúng ta có thể cài trên bất cứ tài khoản nào, bạn có thể cài đặt ngay trên tài khoản admin mà bạn đang dùng hiện tại.  
+Generate an SSH key pair and determine where it will be stored:
 
-Tạo cặp khóa SSH và xác định vị trí sẽ được lưu trữ : 
 ```bash
 ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
 ```
 
-Hệ thống sẽ tiến hành tạo và lưu cặp khóa SSH : 
+The system will proceed to create and save the SSH key pair:
 
 ![](https://1.bp.blogspot.com/-SQkk3j6XsQk/YGGQGx4tzmI/AAAAAAAABTc/Im7azoBjBTcemvSNzqrPEQRf3SC2aSZJACLcBGAsYHQ/s736/Screenshot%2Bfrom%2B2021-03-29%2B15-29-40.png)
 
-Sử dụng lệnh **_cat_** để lưu **_public key_** vào **_authorized\_keys_** trong thư mục của SSH:
+Using **_cat_** command to save **_public key_** to **_authorized\_keys_** in SSH directory:
+
 ```bash
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 ```
 
-Phân quyền cho người dùng với lệnh _**chmod** :_
+Delegate user permissions with the _**chmod**_ command :
+
 ```bash
 chmod 0600 ~/.ssh/authorized_keys
 ```
 
-Xác minh mọi thứ được thiết lập chính xác bằng cách ssh đến localhost: 
+Verify everything is set up correctly by ssh to localhost: 
+
 ```bash
 ssh localhost
 ```
 
-## Download và Cài đặt Hadoop trên Ubuntu
-Tải về một phiên bản Hadoop trên trang phân phối chính thức của Hadoop tại : [https://hadoop.apache.org/releases.html](https://hadoop.apache.org/releases.html)
+## Download and Install Hadoop on Ubuntu
+
+Download a version of Hadoop from the official Hadoop distribution site at: [https://hadoop.apache.org/releases.html](https://hadoop.apache.org/releases.html)
 
 ![](https://1.bp.blogspot.com/-f6ANJNGMkUk/YGGMH9A3xfI/AAAAAAAABTQ/4r7GV3CZuQQNBvouMIew57h-JhPMDasZACLcBGAsYHQ/s1202/Screenshot%2Bfrom%2B2021-03-29%2B15-12-40.png)
 
-Ấn vào phần **_binary_** trong **_Binary download_**
+Click on the **_binary_** in **_Binary download_**
 
-Bây giờ để file nén mà bạn vừa tải về vào bất kì chỗ nào và giải nén nó ra bằng lệnh : 
+Now put the compressed file you just downloaded anywhere and extract it with the command: 
+
 ```bash
 tar xvzf hadoop-3.2.2.tar.gz
 ```
 
-  
+## Configuring and Deploying Hadoop Single Node (Pseudo-Distributed Mode)
 
-## Cấu hình và triển khai Hadoop Single Node (Pseudo-Distributed Mode)
-Để cấu hình Hadoop cho chế độ phân phối giả chúng ta sẽ chỉnh sửa các tập file cấu hình của Hadoop trong đường dẫn **_etc/hadoop_** và trong **_file cấu hình môi trường_** gồm các file sau : 
+To configure Hadoop for pseudo-distributed mode, we will edit the Hadoop configuration files in the `etc/hadoop` path and in the environment configuration file including the following files:
+
 *   `.bashrc`
 *   `hadoop-env.sh`
 *   `core-site.xml`
@@ -80,15 +87,18 @@ tar xvzf hadoop-3.2.2.tar.gz
 *   `mapred-site.xml`
 *   `yarn-site.xml`
 
-**_Lưu ý_**: Trong phần cài đặt dưới đây, Hadoop của mình được đặt trong thư mục `/opt/myapp`, các bạn có thể để Hadoop ở bất cứ đâu cũng được, không nhất thiết phải để giống như mình. 
-### Cấu hình biến môi trường Hadoop ( file .bashrc)
+**_Note_**: In the installation below, my Hadoop is placed in the folder `/opt/myapp`, you can put Hadoop anywhere, it doesn't have to be the same as me.
 
-Mở file của .bashrc của bạn bằng trình soạn thảo nano : 
+### Configure Hadoop environment variables (file .bashrc)
+
+Open file `.bashrc` with `nano` : 
+
 ```bash
 sudo nano ~/.bashrc
 ```
 
-Xác định biến mỗi trường **_Hadoop_** bằng cách thêm các biến sau vào cuối file ( nhớ chỉnh sửa đường dẫn **_$HADOOP\_HOME_** cho đúng với đường dẫn mà bạn đã đặt hadoop)  
+Define **_Hadoop_** enviroment by adding some variable below at end of the file (edit your hadoop home path match your hadoop path):
+
 ```
 #Hadoop Related Options 
 JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 
@@ -102,26 +112,31 @@ export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
 export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
 export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native" 
 ```
-Áp dụng các thay đổi trên bằng cách thực hiện lệnh sau :   `source ~/.bashrc`
 
-### Chỉnh sửa file hadoop-env
+Apply change with command:   `source ~/.bashrc`
 
-Mở file `hadoop-env.sh` bằng trình soạn thảo nano : 
+### Edit file hadoop-env
+
+open file `hadoop-env.sh` with `nano`:
+
 ```bash
 sudo nano $HADOOP_HOME/etc/hadoop/hadoop-env.sh
 ```
 
-Tìm tới vị trí như hình bên dưới, bỏ comment ( bỏ dấu #) phần **JAVA\_HOME** và thêm vào đầy đủ đường dẫn openjdk trên máy của bạn : 
+Find the location as shown below, uncomment (remove sign #) the **JAVA\_HOME** and add your openjdk path: 
 
 ![](https://1.bp.blogspot.com/-bg35_Vkla3Y/YGH580alUaI/AAAAAAAABTs/hxsC-I7e6_ohlQHyiXVZyE0DktKa28UWgCPcBGAYYCw/s736/Screenshot%2Bfrom%2B2021-03-29%2B23-01-30.png)
 
-### Chỉnh sửa file core-site.xml
-Mở file `core-site.xml` bằng trình soạn thảo nano : 
+### Edit file core-site.xml
+
+Open file `core-site.xml` with `nano`:
+
 ```bash
 sudo nano $HADOOP_HOME/etc/hadoop/core-site.xml
 ```
 
-Thêm vào giữa 2 thẻ `configuration` để được nội dung đầy đủ như sau : 
+Add between 2 tags `configuration` to get the full content as follows:
+
 ```
 <configuration>
 <property>
@@ -134,16 +149,19 @@ Thêm vào giữa 2 thẻ `configuration` để được nội dung đầy đủ
 </property>
 </configuration>
 ```
-`fs.default.name` cấu hình địa chỉ của HDFS, nếu không cấu hình mặc định nó sẽ được đặt tại cổng 9000, nếu bị trùng cổng thì hãy thay đổi nó sang cổng khác để Hadoop có thể hoạt động bình thường. 
 
-### Chỉnh sửa file hdfs-site.xml
+`fs.default.name` Configure the address of HDFS, if not configured by default it will be placed at port 9000, if there is a duplicate port, change it to another port so Hadoop can operate normally.
 
-Mở file `hdfs-site.xml` bằng trình soạn thảo nano : 
+### Edit file hdfs-site.xml
+
+Open file `hdfs-site.xml` with `nano`:
+
 ```bash
 sudo nano $HADOOP_HOME/etc/hadoop/hdfs-site.xml
 ```
 
-Thêm vào giữa 2 thẻ `configuration` để được nội dung đầy đủ như sau : 
+Add between 2 tags `configuration` to get the full content as follows: 
+
 ```
 <configuration>
 <property>
@@ -161,15 +179,18 @@ Thêm vào giữa 2 thẻ `configuration` để được nội dung đầy đủ
 </configuration>
 ```
 
-`dfs.replication` cấu hình số bản sao, thường thì 3 là con số thường được chọn tuy nhiên khi cài single node chỉ mang tính chất học là chủ yếu thì bạn để bao nhiêu cũng được.
+`dfs.replication` configure the number of copies.
 
-### Chỉnh sửa file mapred-site.xml
-Mở file `mapred-site.xml` bằng trình soạn thảo nano : 
+### Edit file mapred-site.xml
+
+Open file `mapred-site.xml` with `nano`:
+ 
 ```bash
 sudo nano $HADOOP_HOME/etc/hadoop/mapred-site.xml
 ```
 
-Thêm vào giữa 2 thẻ `configuration` để được nội dung đầy đủ như sau : 
+Add between 2 tags `configuration` to get the full content as follows: 
+
 ```
 <configuration>
 <property>
@@ -179,14 +200,16 @@ Thêm vào giữa 2 thẻ `configuration` để được nội dung đầy đủ
 </configuration>
 ```
 
-### Chỉnh sửa file yarn-site.xml
+### Open file yarn-site.xml
 
-Mở file `yarn-site.xml` bằng trình soạn thảo nano : 
+Open file `yarn-site.xml` with `nano`:
+
 ```bash
 sudo nano $HADOOP_HOME/etc/hadoop/yarn-site.xml
 ```
 
-Thêm vào giữa 2 thẻ configuration để được nội dung đầy đủ như sau : 
+Add between 2 tags `configuration` to get the full content as follows: 
+
 ```
 <configuration> 
 <property>
@@ -214,46 +237,54 @@ Thêm vào giữa 2 thẻ configuration để được nội dung đầy đủ n
 
 ### Format HDFS namenode
 
-Các bạn phải định dạng lại namenode trước khi bắt đầu các dịch vụ đầu tiên : 
+Format namenode before start first service:
+
 ```bash
 hdfs namenode -format
 ```
 
 ### Start Hadoop Cluster
-Tại thư mục sbin, thực hiện các lệnh sau để chạy và khởi động Hadoop : 
+
+In `sbin`, start hadoop with command: 
+
 ```bash
 ./start-all.sh
 ```
 
-Chạy lệnh jsp để kiểm tra các trình daemon đang chạy: 
+Check daemon running with command: 
+
 ```bash
 jps
 ```
 
-Nếu kết quả ra 6 trình daemon như sau thì bạn đã cấu hình đúng (các bạn để ý tới 6 daemon bên trên thôi nha, XMLServerLauncher các bạn không cần quan tâm tới nó): 
+If the result is 6 daemons as follows, then you have configured correctly (you only pay attention to the 6 daemons above, you don't need to care about XMLServerLauncher): 
 
 ![](https://1.bp.blogspot.com/-XyWzBEAms_o/YGICM8Xp_4I/AAAAAAAABT0/_5oCJiK6cIYJX1WUUyVSfd8lvxvVsRlmACLcBGAsYHQ/s540/Screenshot%2Bfrom%2B2021-03-29%2B23-36-44.png)
 
-### Truy cập Hadoop UI từ trình duyệt 
-Các bạn có thể kiểm tra Hadoop đã được cài đặt thành công hay chưa tại cổng mặc định của namenode là `9870` : 
+### Access Hadoop UI from the browser
+
+You can check whether Hadoop has been installed successfully or not at namenode's default port `9870`: 
+
 ```bash
 localhost:9870
 ```
 
 ![](https://1.bp.blogspot.com/-FMSuLiP0Xqw/YGIC9MUQJkI/AAAAAAAABT8/c91MvynlbMAiLMr2J-k3G6NvHPF7tDPoACLcBGAsYHQ/s1920/Screenshot%2Bfrom%2B2021-03-29%2B23-39-14.png)
 
-Kiểm tra datanode tại cổng mặc định `9864` : 
+Check datanode at default port `9864`:
+
 ```bash
 localhost:9864
 ```
 
 ![](https://1.bp.blogspot.com/-VCxFp52-k60/YGID8DuElgI/AAAAAAAABUY/JgschX9oirkyNPQuCLGI6nexjdCbO8BvwCLcBGAsYHQ/s1919/Screenshot%2Bfrom%2B2021-03-29%2B23-44-11.png)
 
-Kiểm tra Yarn resource manager tại cổng `8088` : 
+Check out the Yarn resource manager at the portal `8088`:
+
 ```bash
 locahost:8088
 ```
 
 ![](https://1.bp.blogspot.com/-s_b6FplcjHc/YGIDyR3m1tI/AAAAAAAABUU/vIs6SqtZc1kodlOpvF26b-U4PaXRQ5vuACLcBGAsYHQ/s1919/Screenshot%2Bfrom%2B2021-03-29%2B23-43-34.png)
 
-Tham khảo : [https://phoenixnap.com/](https://phoenixnap.com/kb/install-hadoop-ubuntu)
+Reference: [https://phoenixnap.com/](https://phoenixnap.com/kb/install-hadoop-ubuntu)

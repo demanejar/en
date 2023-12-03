@@ -1,5 +1,5 @@
 ---
-title: Tổng hợp các câu hỏi về Apache Hadoop 
+title: Summary of questions about Apache Hadoop
 author: trannguyenhan
 date: 2121-08-09 20:52:00 +0700
 categories: [Hadoop & Spark, Hadoop]
@@ -9,6 +9,7 @@ mermaid: true
 image:
   src: https://i.pinimg.com/originals/4a/3c/14/4a3c144fa89a85fd6dbccc07bdb8509a.jpg
 ---
+
 #### Mục tiêu chính của Apache Hadoop 
 Lưu trữ dữ liệu khả mở và xử lý dữ liệu mạnh mẽ. Tiết kiệm chi phí khi lưu trữ và xử lý lượng dữ liệu lớn.
 

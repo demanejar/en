@@ -1,7 +1,7 @@
 ---
 title: HDFS 
 author: trannguyenhan, longpt
-date: 2121-07-04 16:00:00 +0700
+date: 2021-07-04 16:00:00 +0700
 categories: [Hadoop & Spark, Hadoop]
 tags: [Hadoop, Apache Hadoop, Bigdata, HDFS]
 math: true
@@ -9,81 +9,108 @@ mermaid: true
 image:
   src: https://i.pinimg.com/originals/c6/c3/1a/c6c31aa5f418ab6ac2f4122ba3f4db3b.jpg
 ---
-*Hadoop Distributed File System (HDFS) là hệ thống lưu trữ phân tán được thiết kế để chạy trên các phần cứng thông dụng. HDFS có khả năng chịu lỗi cao được triển khai sử dụng các phần cứng giá rẻ. HDFS cung cấp khả năng truy cập thông lượng cao vào dữ liệu ứng dụng vì thế nó rất phù hợp với ứng dụng có tập dữ liệu lớn.*
 
-## Mục tiêu của HDFS
-- Tiết kiệm chi phí cho việc lưu trữ dữ liệu lớn: có thể lưu trữ dữ liệu megabytes đến petabytes, ở dạng có cấu trúc hay không có cấu trúc.
-- Dữ liệu có độ tin cậy cao và có khả năng khắc phục lỗi: Dữ liệu lưu trữ trong HDFS được nhân bản thành nhiều phiên bản và được lưu tại các DataNode khác nhau, khi có 1 máy bị lỗi thì vẫn còn dữ liệu được lưu tại DataNode khác.
-- Tính chính xác cao: Dữ liệu lưu trữ trong HDFS thường xuyên được kiểm tra bằng mã checksum được tính trong quá trình ghi file, nếu có lỗi xảy ra sẽ được khôi phục bằng các bản sao.
-- Khả năng mở rộng: có thể tăng hàng trăm node trong một cluster.
-- Có throughput cao: tốc độ xử lý truy nhập dữ liệu cao.
-- Data Locality: xử lý dữ liệu tại chỗ.
+*Hadoop Distributed File System (HDFS) is a distributed storage system designed to run on common hardware. Highly fault-tolerant HDFS is implemented using low-cost hardware. HDFS provides high-throughput access to application data so it is well suited for applications with large data sets.*
 
+## Objective of HDFS
+
+- Save money on large data storage: can store megabytes to petabytes of data, in structured or unstructured form.
+
+- Data is highly reliable and capable of overcoming errors: Data stored in HDFS is duplicated into many versions and stored in different DataNodes. When one machine fails, the data is still stored. at another DataNode.
+
+- High accuracy: Data stored in HDFS is regularly checked with a checksum code calculated during the file writing process. If an error occurs, it will be restored by copies.
+
+- Scalability: can increase hundreds of nodes in a cluster.
+
+- Has high throughput: high data access processing speed.
+
+- Data Locality: process data locally.
 
 ## HDFS Architecture 
-Theo dõi hình vẽ dưới để xem tổng quát về kiến trúc của HDFS.
+
+Follow the figure below to see an overview of the architecture of HDFS.
 
 ![](https://i.pinimg.com/originals/c6/c3/1a/c6c31aa5f418ab6ac2f4122ba3f4db3b.jpg)
 
-Với HDFS, dữ liệu được ghi trên 1 máy chủ và có thể đọc lại nhiều lần sau đó tại bất cứ máy chủ khác trong cụm HDFS. HDFS bao gồm 1 Namenode chính và nhiều Datanode kết nối lại thành một cụm (cluster).
+With HDFS, data is written on one server and can be read many times later at any other server in the HDFS cluster. HDFS includes 1 main Namenode and many Datanodes connected into a cluster.
 
 ### Namenode 
-HDFS chỉ bao gồm duy nhất 1 namenode được gọi là master node thực hiện các nhiệm vụ: 
-- Lưu trữ metadata của dữ liệu thực tế (tên, đường dẫn, blocks id, cấu hình datanode vị trí blocks,...)
-- Quản lý không gian tên của hệ thống file ( ánh xạ các file name với các blocks, ánh xạ các block vào các datanode)
-- Quản lý cấu hình của cụm
-- Chỉ định công việc cho datanode
+
+HDFS includes only 1 namenode called master node that performs the following tasks:
+
+- Stores metadata of actual data (name, path, block id, block location datanode configuration,...)
+
+- Manage file system namespaces (map file names to blocks, map blocks to datanodes)
+
+- Manage cluster configuration
+
+- Assign jobs to datanode
 
 ### Datanode
-Chức năng của Datanode:
-- Lưu trữ dữ liệu thực tế
-- Trực tiếp thực hiện và xử lý công việc ( đọc/ghi dữ liệu)
+
+Functions of Datanode:
+
+- Stores actual data
+
+- Directly perform and process work (read/write data)
 
 ### Secondary Namenode
-Secondary Namenode là một node phụ chạy cùng với Namenode, nhìn tên gọi nhiều người nhầm tưởng rằng nó để backup cho Namenode tuy nhiên không phải vậy, Secondary Namenode như là một trợ lý đắc lực của Namenode, có vai trò và nhiệm vụ rõ ràng:
-- Nó thường xuyên đọc các file, các metadata được lưu trên RAM của datanode và ghi vào ổ cứng.
-- Nó liên đọc nội dung trong Editlogs và cập nhật vào FsImage, để chuẩn bị cho lần khởi động tiếp theo của namenode.
-- Nó liên tục kiểm tra tính chính xác của các tệp tin lưu trên các datanode.
 
-### Cơ chế heartbeat
-Heartbeat là cách liên lạc hay là cách để datanode cho namenode biết là nó còn sống. Định kì datanode sẽ gửi một heartbeat về cho namenode để namenode biết là datanode đó còn hoạt động. Nếu datanode không gửi heartbeat về cho namenode thì namenode coi rằng node đó đã hỏng và không thể thực hiện nhiệm vụ được giao. Namenode sẽ phân công task đó cho một datanode khác.
+Secondary Namenode is a secondary node that runs together with Namenode. Looking at the name, many people mistakenly think that it is to backup Namenode, but that is not the case. Secondary Namenode is like an effective assistant of Namenode, with clear roles and tasks:
+
+- It regularly reads files and metadata stored on the datanode's RAM and writes to the hard drive.
+
+- It continuously reads the content in Editlogs and updates it to FsImage, to prepare for the next namenode startup.
+
+- It continuously checks the accuracy of files stored on datanodes.
+
+### Heartbeat mechanism
+
+Heartbeat is a way of communication or a way for the datanode to let the namenode know that it is alive. Periodically the datanode will send a heartbeat to the namenode to let the namenode know that the datanode is still active. If the datanode does not send a heartbeat to the namenode, the namenode considers that node to be broken and cannot perform its assigned task. Namenode will assign that task to another datanode.
 
 ### Rack
-Theo thứ tự giảm dần từ cao xuống thấp thì ta có Rack > Node > Block. Rack là một cụm datanode cùng một đầu mạng, bao gồm các máy vật lí (tương đương một server hay 1 node ) cùng kết nối chung 1 switch 
+
+In descending order from high to low, we have Rack > Node > Block. Rack is a cluster of datanodes at the same end of the network, including physical machines (equivalent to a server or node) connected to a common switch.
 
 ### Blocks
-Blocks là một đơn vị lưu trữ của HDFS, các data được đưa vào HDFS sẽ được chia thành các block có các kích thước cố định (nếu không cấu hình thì mặc định nó là 128MB).
 
-_Vấn đề gì xảy ra nếu lưu trữ các file nhỏ trên HDFS?_
+Blocks are a storage unit of HDFS, data put into HDFS will be divided into blocks with fixed sizes (if not configured, the default is 128MB).
 
-Câu trả lời: HDFS sẽ không tốt khi xử lý một lượng lớn các file nhỏ. Mỗi dữ liệu lưu trữ trên HDFS được đại diện bằng 1 blocks với kích thước là 128MB, vậy nếu lưu trữ lượng lớn file nhỏ thì sẽ cần 1 lượng lớn các block để lưu chữ chúng và mỗi block chúng ta chỉ cần dùng tới 1 ít và còn thừa rất nhiều dung lượng gây ra sự lãng phí. Chúng ta cũng có thể thấy là block size của hệ thống file ở các hệ điều hành tiêu biểu như linux là 4KB là rất bé so với 128MB.
+_What happens if you store small files on HDFS?_
 
+Answer: HDFS is not good at handling large amounts of small files. Each data stored on HDFS is represented by 1 block with a size of 128MB, so if we store a large number of small files, we will need a large number of blocks to store them and each block we only need to use a little. and there is still a lot of space left over, causing waste. We can also see that the block size of the file system in typical operating systems like Linux is 4KB, which is very small compared to 128MB.
 
+## Work
 
-## Hoạt động 
-
-Sau đây mình sẽ trình bày nguyên lí chung của đọc ghi dữ liệu trên HDFS:
+Next, I will present the general principle of reading and writing data on HDFS:
 
 ### Write data 
 
 ![](https://raw.githubusercontent.com/demanejar/image-collection/main/HDFS/writedata.png)
 
-Theo trình tự trong hình ta có các bước write dữ liệu như sau: 
-1.  Client gửi yêu cầu tạo file ở DistributedFileSystem APIs.
-2. DistributedFileSystem yêu cầu tạo file ở NameNode.NameNode kiểm tra quyền của client và kiểm tra file mới có tồn tại hay không...
-3. DistributedFileSystem return FSDataOutPutStream cho client để ghi dữ liệu. FSDataOutputStream chứa DFSOutputStream, nó dùng để xử lý tương tác với NameNode và DataNode. Khi client ghi dữ liệu, DFSOutputStream chia dữ liệu thành các packet và đẩy nó vào hàng đợi DataQueue. DataStreamer sẽ nói với NameNode để phân bổ các block vào các datanode để lưu trữ các bản sao.
-4. Các DataNode tạo thành pipeline, số datanode bằng số bản sao của file.  DataStream gửi packet tới DataNode đầu tiên trong pipeline, datanode này sẽ chuyển tiếp packet lần lượt tới các Datanode trong pipeline.
-5. DFSOutputStream có Ack Queue để duy trì các packet chưa được xác nhận bởi các DataNode. Packet ra khỏi  ackqueue khi nhận được xác nhận từ tất cả các DataNode.
-6. Client gọi close() để kết thúc ghi dữ liệu, các packet còn lại được đẩy vào pipeline.
-7. Sau khi toàn bộ các packet được ghi vào các DataNode, thông báo hoàn thành ghi file.
+According to the sequence in the picture, we have the following steps to write data:
 
-Đó là toàn bộ những gì diễn ra ở đằng sau, còn đây là ví dụ một trong những lênh thao tác ghi trên hdfs 
+1. Client sends request to create file at DistributedFileSystem APIs.
+
+2. DistributedFileSystem requires creating a file at NameNode.NameNode checks the client's permissions and checks whether the new file exists or not...
+
+3. DistributedFileSystem returns FSDataOutPutStream to the client to write data. FSDataOutputStream contains DFSOutputStream, which is used to handle interactions with NameNode and DataNode. When the client writes data, DFSOutputStream divides the data into packets and pushes it to the DataQueue queue. DataStreamer will tell NameNode to allocate blocks to datanodes to store copies.
+
+4. DataNodes form the pipeline, the number of datanodes is equal to the number of copies of the file. DataStream sends the packet to the first DataNode in the pipeline, this datanode will forward the packet in turn to the Datanodes in the pipeline.
+
+5. DFSOutputStream has an Ack Queue to maintain packets that have not been acknowledged by DataNodes. The packet exits the ackqueue when it receives confirmation from all DataNodes.
+
+6. The client calls close() to finish writing data, the remaining packets are pushed into the pipeline.
+
+7. After all packets are written to the DataNodes, the file writing completion notification is announced.
+
+That's all what's going on behind the scenes, and here's an example of one of the write operations on hdfs
 
 ```bash
 hdfs dfs -put <path_on_your_computer> <path_on_hadoop> 
 ```
 
-Trong quá trình thực tế hầu như sẽ không làm việc trực tiếp với hệ thống file system của hadoop(HDFS) bằng câu lệnh, mà ta thường đọc, ghi qua spark, ví dụ
+In practice, we will almost never work directly with the hadoop file system (HDFS) with commands, but we often read and write through spark, for example:
 
 ```scala
 dataFrame.write.save("<path_on_hadoop>")
@@ -93,9 +120,14 @@ dataFrame.write.save("<path_on_hadoop>")
 
 ![](https://raw.githubusercontent.com/demanejar/image-collection/main/HDFS/readdata.png)
 
-1. Để mở file, client gọi phương thức open ở FileSystemObject.
-2. DistributedFileSystem gọi Name để lấy vị trí của blocks của file. NameNode trả về địa chỉ của các DataNode chứa bản sao của block đó.
-3. Sau khi nhận được địa chỉ của các NameNode, Một đối tượng FSDataInputStream được trả về cho client. FSDataInputStream chứa DFSInputStream. DFSInputStream quản lý I/O của DataNode và NameNode.
-4. Client gọi phương thức read() ở FSDataInputStream, DFSInputStream kết nối với DataNode gần nhất để đọc block đầu tiên của file. Phương thức read() được lặp đi lặp lại nhiều lần cho đến cuối block.
-5. Sau khi đọc xong, DFSInputStream ngắt kết nối và xác định DataNode cho block tiếp theo. Khi DFSInputStream đọc file, nếu có lỗi xảy ra nó sẽ chuyển sang DataNode khác gần nhất có chứa block đó.
-7. Khi client đọc xong file, gọi close().
+1. To open a file, the client calls the open method on FileSystemObject.
+
+2. DistributedFileSystem calls Name to get the location of the file's blocks. NameNode returns the address of the DataNodes containing copies of that block.
+
+3. After receiving the addresses of the NameNodes, an FSDataInputStream object is returned to the client. FSDataInputStream contains DFSInputStream. DFSInputStream manages DataNode and NameNode I/O.
+
+4. The client calls the read() method on FSDataInputStream, DFSInputStream connects to the nearest DataNode to read the first block of the file. The read() method is repeated many times until the end of the block.
+
+5. After reading, DFSInputStream disconnects and determines the DataNode for the next block. When DFSInputStream reads the file, if an error occurs it will switch to the nearest other DataNode containing that block.
+
+7. When the client finishes reading the file, call close().

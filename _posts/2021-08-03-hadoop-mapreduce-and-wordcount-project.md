@@ -1,7 +1,7 @@
 ---
-title: Hadoop MapReduce và chương trình WordCount cơ bản với MapReduce 
+title: Hadoop MapReduce and basic WordCount program with MapReduce
 author: trannguyenhan
-date: 2121-08-03 16:00:00 +0700
+date: 2021-08-03 16:00:00 +0700
 categories: [Hadoop & Spark, Hadoop]
 tags: [Hadoop, Apache Hadoop, Bigdata, HDFS, Hadoop MapReduce, MapReduce]
 math: true
@@ -9,12 +9,15 @@ mermaid: true
 image:
   src: https://i.pinimg.com/originals/24/b3/8d/24b38d9f8ea2a4bddb32c1c95d290378.jpg
 ---
-_MapReduce là một kỹ thuật xử lý và là một mô hình lập trình cho tính toán phân tán để triển khai và xử lý dữ liệu lớn. Hadoop MapReduce là một khung xử lý dữ liệu của Hadoop xây dựng dựa trên ý tưởng của MapReduce, bây giờ khi nói về MapReduce là chúng ta sẽ nghĩ ngay tới Hadoop MapReduce, nên trong bài viết này một số chỗ mình xin phép nói ngắn gọn Hadoop MapReduce là MapReduce._
 
-Để hiểu rõ hơn về ý tưởng của MapReduce các bạn có thể xem lại bài viết trước của mình về [Mô hình lập trình MapReduce cho Bigdata](https://demanejar.github.io/posts/mapreduce-programming-model/).
+_MapReduce is a processing technique and a programming model for distributed computing to deploy and process big data. Hadoop MapReduce is a data processing framework of Hadoop built on the idea of ​​MapReduce, now when we talk about MapReduce we will immediately think of Hadoop MapReduce, so in this article I would like to briefly talk about some places. Hadoop MapReduce is MapReduce._
 
-## Các thành phần Hadoop MapReduce
-Khi lập trình với MapReduce các bạn chỉ cần phải để ý tới 3 lớp sau: 
+To better understand the idea of ​​MapReduce, you can review my previous article about [MapReduce programming model for Bigdata](https://demanejar.github.io/en/posts/mapreduce-programming-model/).
+
+## Hadoop MapReduce components
+
+When programming with MapReduce, you only need to pay attention to the following 3 layers:
+
 1. Mapper
 2. Shuffle and sorting
 3. Reducer
@@ -23,160 +26,199 @@ Khi lập trình với MapReduce các bạn chỉ cần phải để ý tới 3 
 
 ![](https://raw.githubusercontent.com/demanejar/image-collection/main/HadoopMapReduce/map_reduce_task.png)
 
-- Máy master phân phối M `Map` task cho các máy vào theo dõi tiến trình của chúng
-- Các `Map` task đọc dữ liệu và tiến hành xử lý, kết quả được lưu trữ tại local buffer
-- Pha Shuffle chỉ định các _reducers_ tới các vùng nhớ đệm nơi mà chúng được đọc từ xa và xử lý bởi các _reducers_
-- `Reducer` xuất kết quả và lưu trữ trên HDFS 
+- The master machine distributes M `Map` tasks to the incoming machines to monitor their progress
+
+- Tasks `Map` read data and perform processing, the results are stored in the local buffer
+
+- The `Shuffle` phase assigns _reducers_ to memory buffers where they are read remotely and processed by _reducers_
+
+- `Reducer` export the results and store on HDFS
 
 ### Mapper
-Đây là pha đầu tiên của chương trình. Có hai bước trong pha này: splitting and mapping. Một tập dữ liệu được chia thành các đơn vị bằng nhau được gọi là chunks trong bước phân tách (splitting). Hadoop bao gồm một RecordReader sử dụng TextInputFormat để chuyển đổi các phân tách đầu vào thành các cặp key-value.
+
+This is the first phase of the program. There are two steps in this phase: splitting and mapping. A data set is divided into equal units called chunks in the splitting step. Hadoop includes a RecordReader that uses TextInputFormat to convert input decompositions into key-value pairs.
 
 ### Shuffle
-Đây là pha thứ hai diễn ra sau khi hoàn thành Mapper. Nó bao gồm hai bước chính: sắp xếp và hợp nhất (sorting and merging). Trong pha này, các cặp key-value được sắp xếp bằng cách sử dụng các key. Việc hợp nhất đảm bảo rằng các cặp key-value được kết hợp.
+
+This is the second phase that takes place after completing Mapper. It includes two main steps: sorting and merging. In this phase, key-value pairs are sorted using keys. Merging ensures that key-value pairs are combined.
 
 ### Reduce
-Trong pha Reduce, đầu ra của pha Shuffle được sử dụng làm đầu vào. Reducer xử lý đầu vào này hơn nữa để giảm các giá trị trung gian thành các giá trị nhỏ hơn. Nó cung cấp một bản tóm tắt của toàn bộ tập dữ liệu, ví dụ như là tính tổng, tìm max, min,... . Đầu ra của pha này được lưu trữ trong HDFS.
 
-## Ưu điểm của Hadoop MapReduce
-### Hỗ trợ xử lý và tính toán song song (Parallel Processing)
-Trong MapReduce, công việc được phân chia giữa nhiều node và mỗi node hoạt động đồng thời với một phần công việc. Mô hình MapReduce cho phép công việc được phân chia ra thành các công việc nhỏ hơn hoàn toàn riêng biệt.
+In the Reduce phase, the output of the Shuffle phase is used as input. The Reducer processes this input further to reduce the intermediate values ​​to smaller values. It provides a summary of the entire data set, for example calculating the sum, finding max, min, etc. The output of this phase is stored in HDFS.
+
+## Advantages of Hadoop MapReduce
+
+### Supports parallel processing and computing (Parallel Processing)
+
+In MapReduce, work is divided among multiple nodes, and each node works on a portion of the work simultaneously. The MapReduce model allows a job to be divided into smaller, completely separate jobs.
 
 ### Data Locality
-Mặc dù các máy đã kết hợp với nhau thành một cụm, tuy nhiên khi dữ liệu càng lớn lên thì việc di chuyển dữ liệu giữa các máy là rất mất thời gian và có thể gây ra các vấn đề như tắc nghẽn đường truyền.
 
-Hadoop khắc phục vấn đề trên bằng cách phân phối dữ liệu ở nhiều node và mỗi node xử lý các phần dữ liệu nằm trên chính nó.
+Even though the machines are combined into a cluster, as the data grows larger, moving data between machines is very time-consuming and can cause problems such as transmission congestion.
 
-### Khả năng mở rộng (Scalability)
-Hadoop có khả năng mở rộng cao, có thể lên tới hàng nghìn node mà không ảnh hưởng tới hiệu năng cũng như phát sinh lỗi.
+Hadoop overcomes the above problem by distributing data across multiple nodes and each node processes its own pieces of data.
 
-Ví dụ để scan 1000TB dữ liệu trên 1 node với tốc độ 100MB/s thì sẽ mất 24 ngày, và khi mở rộng cụm lên 1000 node chúng ta cũng mất tương đương 35 phút để scan xong 1000TB dữ liệu này (hiệu năng hoàn toàn không bị giảm sút và không có phát sinh lỗi trong quá trình mở rộng)
+### Scalability
 
-### Tính sẵn có và khả năng chịu lỗi (Availability & Fault Tolerance) 
-Hadoop lưu trữ các bản sao của dữ liệu trên các node khác nhau, vì thế trong trường hợp bị lỗi bản sao dữ liệu luôn sẵn sàng sử dụng bất cứ khi nào được yêu cầu để đảm bảo tính sẵn có của dữ liệu.
+Hadoop is highly scalable, can reach thousands of nodes without affecting performance or generating errors.
 
-Nhờ tính năng sẵn có của dữ liệu mà Hadoop có khả năng chịu lỗi cao, khi một Task bị kill hay là một node bị mất kết nối dẫn tới Task đó không được hoàn thành thì Hadoop sẽ nhanh chóng phát hiện và chỉ định một node mới có chứa bản sao dữ liệu thực hiện Task đó (đảm bảo tính *locality*)
+For example, to scan 1000TB of data on 1 node at a speed of 100MB/s will take 24 days, and when expanding the cluster to 1000 nodes, it will take the equivalent of 35 minutes to scan this 1000TB of data (perfect performance). is not degraded and no errors arise during the expansion process)
 
-### Chi phí thấp (Cost-effective)
-Như đã được đề cập tới trong bài [Giới thiệu tổng quan về Hadoop](https://demanejar.github.io/posts/hadoop-introduction/), Hadoop chạy trên các máy có phần cứng phổ thông (commodity hardware), là các máy rẻ, băng thông không cao. Hadoop có khả năng chịu lỗi cao vì vậy cần ít các quản trị viên hơn. Hadoop là dễ học, dễ sử dụng nên cũng tốn ít chi phí trong việc đào tạo cũng như thuê nhân công.
+### Availability & Fault Tolerance
 
-### Bảo mật và xác thực (Security & Authentication)
-Mô hình lập trình MapReduce giải quyết rủi ro về bảo mật bằng cách làm việc với HDFS và HBase có tính mật cao chỉ cho phép người dùng được phê duyệt mới có thể thao tác trên dữ liệu được lưu trữ trong hệ thống.
+Hadoop stores copies of data on different nodes, so in case of failure the data copy is available whenever required to ensure data availability.
 
-### Mô hình lập trình đơn giản
-Các bạn có thể thấy mô hình lập trình MapReduce là cực kì đơn giản, ngoài ra thì Hadoop MapReduce sử dụng ngôn ngữ Java là một ngôn ngữ phổ biến và dễ học.
+Thanks to the data availability feature, Hadoop has high fault tolerance. When a Task is killed or a node loses connection, leading to that Task not being completed, Hadoop will quickly detect and assign a node. new file containing a copy of that Task's execution data (ensuring locality )
 
-## Chương trình WordCount với MapReduce
-Chương trình WordCount là chương trình kinh điển minh họa cho MapReduce và được lấy làm ví dụ cho hầu hết các bài giới thiệu về MapReduce.
+### Low cost (Cost-effective)
 
-Trong phần này, mình sẽ hướng dẫn mọi người chạy Job này với Hadoop MapReduce. Toàn bộ mã nguồn của chương trình WordCount bạn có thể tải về [TẠI ĐÂY](https://github.com/demanejar/word-count-hadoop).
+Hadoop runs on machines with common hardware, which are cheap machines with low bandwidth. Hadoop is highly fault tolerant so fewer administrators are needed. Hadoop is easy to learn and use, so it also costs little in training and hiring workers.
 
-### Bước 1: Tải về Project
-Các bạn hãy clone project của mình đã được chuẩn bị sẵn về máy [TẠI ĐÂY](https://github.com/demanejar/word-count-hadoop).
+### Security & Authentication
 
-### Bước 2: Cài đặt mvn
-Nếu máy bạn chưa có `mvn`, hãy tải về `mvn` nha, việc cài đặt rất đơn giản nên mình sẽ không đề cập ở đây.
+The MapReduce programming model addresses security risks by working with highly confidential HDFS and HBase allowing only approved users to operate on data stored in the system.
 
-Để kiểm tra xem đã cài đặt thành công `mvn` thì bạn sử dụng câu lệnh `mvn --version`: 
+### Simple programming model
+
+You can see that the MapReduce programming model is extremely simple, in addition, Hadoop MapReduce uses the Java language which is a popular and easy to learn language.
+
+## WordCount program with MapReduce
+
+The WordCount program is the classic program that illustrates MapReduce and is used as an example in most introductions to MapReduce.
+
+In this section, I will guide everyone to run this Job with Hadoop MapReduce. The entire source code of the WordCount program can be downloaded [HERE](https://github.com/demanejar/word-count-hadoop).
+
+### Step 1: Download Project
+
+Please clone your prepared project to your computer [HERE](https://github.com/demanejar/word-count-hadoop).
+
+### Step 2: Install mvn
+
+If your device doesn't have it `mvn`, please download it `mvn`, the installation is very simple so I won't mention it here.
+
+To check if the installation was successful `mvn`, use the command `mvn --version`:
 
 ![](https://raw.githubusercontent.com/demanejar/image-collection/main/HadoopMapReduce/mvn_version.png)
 
-### Bước 3: Build file jar
-Di chuyển tới thư mục chứa project vừa clone về, chạy lệnh `mvn clean package` để build project thành một file `jar` (khi build lần đầu, mvn sẽ phải tải xuống các phụ thuộc nên sẽ lâu, các lần sau sẽ nhanh hơn).
+### Step 3: Build file jar
 
-Để ý nếu bạn gặp lỗi như dưới đây nếu build thì hãy sửa lại cho đúng phiên bản jdk mà bạn đang dùng trên máy, ví dụ trong file `pom` được cấu hình là jdk 15, tuy nhiên trên máy mình chỉ có jdk 11 thì sau khi build nó sẽ hiện lỗi: 
+Move to the folder containing the cloned project, run the command `mvn clean package` to build the project into one file `jar` (when building for the first time, mvn will have to download the dependencies so it will take a long time, next time it will be faster).
+
+Note that if you get an error like below when building, please correct the jdk version you are using on your computer, for example, the `pom` configured file is jdk 15, however on my computer there is only jdk 11, then after build it will show the error:
 
 ![](https://raw.githubusercontent.com/demanejar/image-collection/main/HadoopMapReduce/error_build_mvn.png)
 
-Tại file `pom.xml` trong thẻ `<plugins>` sửa lại `<release>` là 11, sau đó lưu lại và thực hiện lại câu lệnh `mvn clean package`: 
+At the file `pom.xml` in the `<plugins>` edit tab `<release>`, it is 11, then save and re-execute the command `mvn clean package`: 
 
 ![](https://raw.githubusercontent.com/demanejar/image-collection/main/HadoopMapReduce/fix.png)
 
 ![](https://raw.githubusercontent.com/demanejar/image-collection/main/HadoopMapReduce/run%20maven.png)
 
-Nếu hiện dòng chữ "BUILD SUCCESS" là các bạn đã build thành công file `jar` rồi nha, file `jar` sinh ra nằm trong thư mục `target` của project. Các bạn có thể thấy là lần build lại thứ 2 này rất nhanh do các phụ thuộc đã được tải về để trên máy local.
+If the text "BUILD SUCCESS" appears, you have successfully built the file `jar`, the generated file is in the project `jar` directory . `target` you can see that this second rebuild is very fast because the dependencies have been downloaded to the local machine.
 
-### Bước 4: Chuẩn bị dữ liệu
-Sau khi có file `jar` tiếp theo là chúng ta sẽ chuẩn bị dữ liệu đầu vào, các bạn có thể lấy 1 file text bất kì để test, bạn có thể chạy Hadoop với input đầu vào nằm ở local, tuy nhiên điều này chỉ thành công nếu bạn chạy single node còn nếu bạn có 1 cụm Hadoop và muốn chạy job trên đó thì file đầu vào của bạn phải được đẩy lên HDFS.
+### Step 4: Prepare data
 
-Copy file của bạn từ local lên HDFS thông qua dòng lệnh: 
+After we have the `jar` next file, we will prepare the input data, you can take any text file to test, you can run Hadoop with the input located locally, but this only succeeds. If you run a single node and if you have a Hadoop cluster and want to run a job on it, your input file must be pushed to HDFS.
+
+Copy your files from local to HDFS via command line:
+
 ```bash
 hdfs dfs -copyFromLocal input.txt /
 ```
-Xem lại các câu lệnh thao tác với file và thư mục trên HDFS [TẠI ĐÂY](https://demanejar.github.io/posts/hdfs-commands/)
 
-Kiểm tra xem file `input.txt` của bạn đã có trên HDFS chưa bằng lệnh: 
+Review commands to manipulate files and folders on HDFS [HERE](https://demanejar.github.io/en/posts/hdfs-commands/)
+
+Check if `input.txt` your file is already on HDFS with the command:
+
 ```bash
 hdfs dfs -ls /
 ```
 
-### Bước 4: Chạy chương trình 
-Mọi thứ đã xong bây giờ là submit job của bạn lên Hadoop và chờ đợi kết quả, chạy dòng lệnh sau: 
+### Step 4: Run the program
+
+Everything is done now, submit your job to Hadoop and wait for the results, run the following command:
+
 ```bash
 hadoop jar target/wordcount-V1.jar com.hadoop.mapreduce.WordCount hdfs://localhost:9000/input.txt hdfs://localhost:9000/output
 ```
-- Với tham số đầu tiên `hdfs://localhost:9000/input.txt` là đường dẫn tới file input đầu vào, do file input được đặt trên HDFS nên phải thêm vào đường dẫn `hdfs://` nếu không chương trình sẽ hiểu đó là một đường dẫn local
-- Tham số thứ 2 `hdfs://localhost:9001/output` là đường dẫn đặt output của chương trình, chúng ta cũng sẽ lưu output trên HDFS
-- Nếu bạn không cài HDFS tại cổng `9000` hãy sửa lại cho đúng
-- Nếu bạn submit job lên cụm nhiều node hãy thay đổi `localhost`  thành tên tương ứng với máy master
 
-Sau khi chạy xong terminal sẽ hiện một số thông tin về job đã chạy của bạn: 
+- The first parameter `hdfs://localhost:9000/input.txt` is the path to the input file. Because the input file is located on HDFS, the path must be added `hdfs://` otherwise the program will understand it as a local path.
+
+- The second parameter `hdfs://localhost:9001/output` is the path to set the program's output, we will also save the output on HDFS
+
+- If you do not install HDFS at the gateway, `9000` please correct it
+
+- If you submit the job to a multi-node cluster, change it `localhost` to the name corresponding to the master machine
+
+After running, the terminal will display some information about your run job:
 
 ![](https://raw.githubusercontent.com/demanejar/image-collection/main/HadoopMapReduce/info_job.png)
 
-Ví dụ trong job của mình có 1 `Map` task và 1 `Reduce` task, File input đầu vào là 332 bytes và file output là 330 bytes.
+For example, in my job there is 1 `Map` task and 1 `Reduce` task, the input file is 332 bytes and the output file is 330 bytes.
 
-Kiểm tra file output đầu ra trên HDFS thông qua lệnh `hdfs dfs -cat /output/part-r-00000`: 
+Check the output file output on HDFS via command `hdfs dfs -cat /output/part-r-00000`:
 
 ![](https://raw.githubusercontent.com/demanejar/image-collection/main/HadoopMapReduce/output.png)
 
-### Chạy chương trình với 2 hoặc nhiều Mapper
-Chúng ta không thể set được số Mapper chạy trong 1 job mà chỉ có thể set được số Mapper tối đa, Hadoop sẽ tự chỉ định số Mapper dựa vào số blocks.
+### Run the program with 2 or more Mapper
 
-Để Hadoop chạy với 2 Mapper thì dữ liệu đầu vào phải được HDFS lưu trên 2 blocks vậy thì có 2 cách: 
-- Một là file input đầu vào của bạn nặng hơn block size khi đó HDFS sẽ lưu trữ file đó dưới dạng 2 blocks.
-- Hai là input đầu vào của bạn thay bằng 1 folder và tron folder đó bạn đặt vào 2 file text bất kì, Hadoop cho phép đầu vào dữ liệu là 1 folder và nó sẽ tự động quét tất cả các file có trong thư mục đó.
+We cannot set the number of Mapper to run in a job, we can only set the maximum number of Mapper, Hadoop will automatically assign the number of Mapper based on the number of blocks.
 
-Bây giờ mình sẽ tạo ra 1 bản sao của file `input.txt` vừa rồi và đặt tên là `input-1.txt`: 
+For Hadoop to run with 2 Mapper, the input data must be stored on 2 blocks by HDFS, so there are 2 ways:
+
+- One is that your input file is heavier than the block size, then HDFS will store that file as 2 blocks.
+
+- Second, replace your input with a folder and in that folder you put any 2 text files. Hadoop allows data input to be a folder and it will automatically scan all files in that folder.
+
+Now I will create a copy of the `input.txt` previous file and name it `input-1.txt`:
+
 ```bash
 hdfs dfs -cp /input.txt /input-1.txt
 ``` 
 
-Sau đó tạo ra 1 thư mục `input` trên HDFS: 
+Then create a directory `input` on HDFS:
+
 ```bash
 hdfs dfs -mkdir /input
 ```
 
-Di chuyển lần lượt từng file `input.txt` và `input-1.txt` vào trong thư mục `input`: 
+Move each file in turn `input.txt` and `input-1.txt` into the folder `input`:
+
 ```bash
 hdfs dfs -mv /input.txt /input
 hdfs dfs -mv /input-1.txt /input
 ```
 
-Kiểm tra xem dữ liệu đã nằm trong thư mục `input` hay chưa: 
+Check if the data is in the folder `input` or not:
+
 ```bash
 hdfs dfs -ls /input
 ```
 
-Vậy là đã xong dữ liệu, bây giờ chúng ta run lại chương trình: 
+So the data is done, now we run the program again:
+
 ```bash
 hadoop jar target/wordcount-V1.jar com.hadoop.mapreduce.WordCount hdfs://localhost:9000/input hdfs://localhost:9000/output
 ```
-- Lúc này input của chúng ta không phải là file `input.txt` nữa mà là cả thư mục `input` nên hãy đổi lại tham số input
+- Now our input is not a file `input.txt` anymore but a folder `input`, so let's change the input parameter
 
-Sau khi chương trình kết thúc chúng ta có thể thấy ngay các thông tin về chương trình đã thay đôi như số `Map` task đã chạy là 2: 
+After the program ends, we can immediately see that the information about the program has changed, such as the number of `Map` tasks that have been run is 2:
 
 ![](https://raw.githubusercontent.com/demanejar/image-collection/main/HadoopMapReduce/output_2_map_task.png)
 
-### Kiểm tra thông tin job đã chạy tại cổng UI của YARN
-Để sinh động hơn, các bạn có thể kiểm tra thông tin 1 job đã chạy tại cổng UI của YARN là cổng 8088: 
+### Check the run job information at YARN's UI portal
+
+To be more vivid, you can check the information of a job that has been run at YARN's UI port, port `8088`: 
+
 ```bash
 http://localhost:8088/cluster
 ```
-- Nếu các bạn chạy job trên một cụm nhiều node, hãy thay `localhost` tên tương ứng với máy master
+
+- If you run the job on a multi-node cluster, change `localhost` the name to correspond to the master machine
 
 	![](https://raw.githubusercontent.com/demanejar/image-collection/main/HadoopMapReduce/YARN_output.png)
-	- Trên đây hiện thông tin về 2 job WordCount mà mình vừa chạy 
-	- Bấm vào từng task một để xem thông tin chi tiết về task đó 
+	- Above shows information about the 2 WordCount jobs that I just ran
+	- Click on each task one by one to view detailed information about that task
 
 
-Tham khảo: [https://hadoop.apache.org](https://hadoop.apache.org/docs/current/hadoop-mapreduce-client/hadoop-mapreduce-client-core/MapReduceTutorial.html), [https://www.educba.com/](https://www.educba.com/what-is-mapreduce/), [https://www.edureka.co/](https://www.edureka.co/blog/mapreduce-tutorial/)
+Reference: [https://hadoop.apache.org](https://hadoop.apache.org/docs/current/hadoop-mapreduce-client/hadoop-mapreduce-client-core/MapReduceTutorial.html), [https://www.educba.com/](https://www.educba.com/what-is-mapreduce/), [https://www.edureka.co/](https://www.edureka.co/blog/mapreduce-tutorial/)

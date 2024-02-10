@@ -1,7 +1,7 @@
 ---
 title: Summary of questions about Apache Hadoop
 author: trannguyenhan
-date: 2121-08-09 20:52:00 +0700
+date: 2021-08-09 20:52:00 +0700
 categories: [Hadoop & Spark, Hadoop]
 tags: [Hadoop, Apache Hadoop, Bigdata, HDFS, Hadoop Yarn]
 math: true
@@ -10,38 +10,47 @@ image:
   src: https://i.pinimg.com/originals/4a/3c/14/4a3c144fa89a85fd6dbccc07bdb8509a.jpg
 ---
 
-#### Mục tiêu chính của Apache Hadoop 
-Lưu trữ dữ liệu khả mở và xử lý dữ liệu mạnh mẽ. Tiết kiệm chi phí khi lưu trữ và xử lý lượng dữ liệu lớn.
+#### The main goal of Apache Hadoop
 
-Bạn có thể xem thêm chi tiết mục tiêu của Hadoop [TẠI ĐÂY](https://demanejar.github.io/posts/hdfs-introduction/#m%E1%BB%A5c-ti%C3%AAu-c%E1%BB%A7a-hdfs)
+Open data storage and powerful data processing. Save costs when storing and processing large amounts of data.
 
-#### Hadoop giải quyết bài toán chịu lỗi thông qua kỹ thuật gì
-- Hadoop chịu lỗi thông qua kỹ thuật dư thừa
-- Các tệp tin được phân mảnh, các mảnh được nhân bản ra các node khác trên cụm
-- Các công việc cần tính toán được phân mảng thành các tác vụ độc lập 
+You can see more details about Hadoop's goals [HERE](https://demanejar.github.io/en/posts/hdfs-introduction/#objective-of-hdfs)
 
-#### Mô tả cách thức 1 client được dữ liệu trên HDFS
-Client truy vấn namenode để biết được vị trí các chunks. Namenode trả về vị trí các chunks. Client kết nối song song với các datanode để đọc các chunk.
+#### Hadoop solves the problem of fault tolerance through what technique?
 
-Bạn có thể xem chi tiêt quá trình đọc dữ liệu này [TẠI ĐÂY](https://demanejar.github.io/posts/hdfs-introduction/#read-data)
+- Hadoop is fault tolerant through redundancy engineering
 
-#### Mô tả cách thức 1 client ghi dữ liệu trên HDFS
-Client kết nối tới namenode để chỉ định khối lượng dữ liệu cần ghi. Namnode chỉ định vị trí các chunk cho client. Client khi chunk tới datanode đầu tiền, sau đó các datanode tự động thực thi nhân bản. Quá trình kết thúc khi tất cả các chunk và nhân bản đã được thực thi thành công. 
+- Files are fragmented, fragments are replicated to other nodes on the cluster
 
-Bạn có thể xem chi tiêt quá trình ghi dữ liệu này [TẠI ĐÂY](https://demanejar.github.io/posts/hdfs-introduction/#write-data)
+- The jobs that need to be calculated are segmented into independent tasks 
 
-#### Các thành phần chính trong Hadoop Ecosystem
-Hadoop Ecosytem là một nền tảng cung cấp các giải pháp để lưu trữ và xử lý lượng lớn dữ liệu. 
-Các thành phần chính trong Hadoop Ecosytem là: 
+#### Describe how a client gets data on HDFS
+
+The client queries the namenode to know the location of the chunks. Namenode returns the location of the chunks. Client connects to datanodes in parallel to read chunks.
+
+You can see details of this data reading process [HERE](https://demanejar.github.io/en/posts/hdfs-introduction/#read-data)
+
+#### Describe how a client writes data on HDFS
+
+The client connects to the namenode to specify the amount of data to write. Namnode specifies the location of chunks for the client. The client when the chunk reaches the first datanode, then the datanodes automatically perform replication. The process ends when all chunks and clones have been executed successfully.
+
+You can see details of this data recording process [HERE](https://demanejar.github.io/posts/hdfs-introduction/#write-data)
+
+#### Main components in Hadoop Ecosystem
+
+Hadoop Ecosytem is a platform that provides solutions for storing and processing large amounts of data. The main components in Hadoop Ecosytem are:
+
 - HDFS 
 - Mapreduce framework 
 - YARN
 - Zookeeper
 
-#### Cơ chế chịu lỗi của datanode trong HDFS
-*Sử dụng cơ chế heartbeat*, định kì datanode sẽ gửi thông báo về trạng thái cho namenode. Khoảng thời gian mặc định mà datanode gửi heartbeat về cho namenode là 3s, sau 3s mà datanode không có gửi thông tin về cho namenode thì mặc định namenode coi là node đó đã chết và nhiệm vụ chưa hoàn thành của node đó sẽ được trao lại cho node mới.
+#### Fault tolerance mechanism of datanode in HDFS
 
-Để cấu hình lại thời gian heartbeat thì bạn có thể thêm đoạn XML sau vào trong file `hdfs-site.xml` như sau: 
+*Using the heartbeat mechanism*, the datanode will periodically send status notifications to the namenode. The default time period for datanode to send heartbeat to namenode is 3s. After 3s, if datanode does not send information to namenode, by default namenode will consider that node dead and the unfinished task of that node will be given back. for new node.
+
+To reconfigure the heartbeat time, you can add the following XML to the `file hdfs-site.xml` as follows:
+
 ```xml
 <property>
 <name>dfs.heartbeat.interval</name>
@@ -54,34 +63,42 @@ Các thành phần chính trong Hadoop Ecosytem là:
 </property>
 ```
 
-Bạn có thể xem các cấu hình mặc định của `hdfs-site.xml` [TẠI ĐÂY](https://hadoop.apache.org/docs/r2.7.0/hadoop-project-dist/hadoop-hdfs/hdfs-default.xml)
+You can see the default configurations `hdfs-site.xml` [HERE](https://hadoop.apache.org/docs/r2.7.0/hadoop-project-dist/hadoop-hdfs/hdfs-default.xml)
 
-#### Cơ chế tổ chức dữ liệu của datanode trong HDFS
-Files trong HDFS được chia thành các khối có kích thước cố định được ( block-sized chunks) gọi là data block. Các block được lưu trữ như các đơn vị độc lập (kích thước của 1 block mặc định là 128MB).
+#### Data organization mechanism of datanode in HDFS
+
+Files in HDFS are divided into block-sized chunks called data blocks. Blocks are stored as independent units (default block size is 128MB).
  
- Các chunk là các tập tin hệ thống trong tập tin cục bộ của máy chủ datanode
+Chunks are system files in the datanode server's local file.
  
- *Xem thêm:* [*Vấn đề gì xảy ra nếu lưu trữ các file nhỏ trên HDFS?*](https://demanejar.github.io/posts/hdfs-introduction/#blocks)
+*See more:* [*What happens if you store small files on HDFS?*](https://demanejar.github.io/en/posts/hdfs-introduction/#blocks)
  
-#### Cơ chế nhân bản dữ liệu trong HDFS
-Các block của file được nhân bản để tăng khả năng chịu lỗi. Namenode là node đưa ra tất cả các quyết định đến việc nhân rộng các khối. 
+#### Data replication mechanism in HDFS
 
-#### HDFS giải quyêt bài toán single-point-of-failure cho namenode bằng cách nào 
-Sử dụng Secondary Namenode theo cơ chế active-passive. Secondary Namenode chỉ hoạt động khi có vấn đề với Namenode
+File blocks are duplicated to increase fault tolerance. The Namenode is the node that makes all the decisions regarding the replication of blocks.
 
-Các bạn có thể xem chi tiết về Secondary Namenode [TẠI ĐÂY](https://demanejar.github.io/posts/hdfs-introduction/#secondary-namenode)
+#### How does HDFS solve the single-point-of-failure problem for namenode
 
-#### 3 chế độ mà Hadoop có thể chạy? 
-- *Standalone mode*: đây là chế độ mặc định, Hadoop sử dụng local FileSystem và 1 tiến trình Java duy nhất để chạy các dịch vụ Hadoop.
-- *Pseudo-distributed mode*: triển khai Hadoop trên 1 node để thực thi tất cả các dịch vụ.
-- *Fully-distributed mode*: triển khai Hadoop trên 1 cụm máy với namenode và datanode.
+Use Secondary Namenode according to active-passive mechanism. Secondary Namenode only works when there is a problem with the Namenode
 
-#### Giải thích Bigdata và tiêu chí 5V của Bigdata
-Bigdata là thuật ngữ chỉ tập dữ liệu lớn và phức tạp và rất khó để xử lý bằng các công cụ dữ liệu quan hệ, các ứng dụng xử lý dữ liệu truyền thống. 
+You can see details about Secondary Namenode [HERE](https://demanejar.github.io/en/posts/hdfs-introduction/#secondary-namenode)
 
-5V trong Bigdata là: 
-- *Volume*: Volume thể hiện lượng dữ liệu đang tăng với tốc độ cấp số nhân, tức là bằng Petabyte và Exabyte.
-- *Velocity*: Velocity đề cập đến tốc độ dữ liệu đang phát triển, rất nhanh. Hôm nay, dữ liệu của ngày hôm qua được coi là dữ liệu cũ. Ngày nay, mạng xã hội là một yếu tố đóng góp lớn vào tốc độ phát triển của dữ liệu.
-- *Variety*: Variety đề cập đến sự không đồng nhất của các kiểu dữ liệu. Nói cách khác, dữ liệu được thu thập có nhiều định dạng như video, âm thanh, csv, v.v. Vì vậy, các định dạng khác nhau này đại diện cho nhiều loại dữ liệu.
-- *Veracity*: Veracity đề cập đến dữ liệu bị nghi ngờ hoặc không chắc chắn của dữ liệu có sẵn do dữ liệu không nhất quán và không đầy đủ. Dữ liệu có sẵn đôi khi có thể lộn xộn và khó tin cậy. Với nhiều dạng dữ liệu lớn, chất lượng và độ chính xác rất khó kiểm soát. Khối lượng thường là lý do đằng sau sự thiếu chất lượng và độ chính xác của dữ liệu.
-- *Value*: Tất cả đều tốt và tốt khi có quyền truy cập vào dữ liệu lớn nhưng trừ khi chúng ta có thể biến nó thành một giá trị.
+#### What are the 3 modes in which Hadoop can run?
+
+- *Standalone mode*: this is the default mode, Hadoop uses local FileSystem and a single Java process to run Hadoop services.
+
+- *Pseudo-distributed mode*: deploy Hadoop on 1 node to execute all services.
+
+- *Fully-distributed mode*: deploy Hadoop on a cluster of machines with namenode and datanode.
+
+#### Explain Bigdata and Bigdata's 5V criteria
+
+Bigdata is a term for large and complex data sets that are difficult to process with relational data tools and traditional data processing applications.
+
+5V in Bigdata is:
+
+- *Volume*: Volume represents the amount of data that is growing at an exponential rate, i.e. in Petabytes and Exabytes.
+- *Velocity*: Velocity refers to the rate at which data is growing, very fast. Today, yesterday's data is considered old data. Today, social networks are a major contributing factor to the growth of data.
+- *Variety*: Variety refers to the heterogeneity of data types. In other words, the data collected comes in many formats like video, audio, csv, etc. So, these different formats represent many types of data.
+- *Veracity*: Veracity refers to doubtful or uncertain data of available data due to data inconsistency and incompleteness. The available data can sometimes be messy and difficult to trust. With many forms of big data, quality and accuracy are difficult to control. Volume is often the reason behind the lack of data quality and accuracy.
+- *Value*: It's all well and good to have access to big data but unless we can turn it into a value.

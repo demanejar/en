@@ -3,10 +3,10 @@ title: About
 icon: fas fa-info
 order: 4
 ---
-### Xin chào, chúng tôi là ***De Manejar Team***
+### Hello, We are ***De Manejar Team***
 
-Demanejar là một blog về bigdata và những thứ xung quanh bigdata. Dữ liệu lớn là một trong những nhánh quan trọng của Khoa học máy tính trong những năm gần đây khi mà dữ liệu sinh ra mỗi ngày đang dần tăng theo một cấp số nhân, và việc sử lý những dữ liệu này để cho ra những dữ liệu hữu dụng, có thể khai thác là một nhu cầu của bất kì công ty, tập đoàn lớn nào. Dữ liệu được ví như là vàng trong thời đại số khi mà công ty, tập đoàn nào nắm giữ được nhiều dữ liệu thì sẽ có lợi thế lớn hơn rất nhiều so với các công ty khác. Có dữ liệu thì AI mới có thể hoạt động và dữ liệu càng lớn thì các thuật toán AI càng hoạt động chính xác.
+Demanejar is a blog about bigdata and things surrounding bigdata. Big data is one of the important branches of Computer Science in recent years as the data generated every day is gradually increasing exponentially, and the processing of this data to produce new data is increasing exponentially. Useful, exploitable data is a need of any large company or corporation. Data is considered gold in the digital age because companies and corporations that hold a lot of data will have a much greater advantage over other companies. Only with data can AI work, and the larger the data, the more accurately AI algorithms will operate.
 
-Dữ liệu lớn sẽ là xu hướng trong những năm tới, tuy vậy thì những blog tiếng Việt viết về Bigdata chưa đủ nhiều và chưa đủ sâu thế nên nhóm mình quyết định cùng viết blog này để chia sẻ tới mọi người những kiến thức mà bọn mình biết để đóng góp làm phong phú thêm nguồn tài liệu CNTT tiếng Việt. 
+Big data will be a trend in the coming years, however, there are not enough Vietnamese blogs about Bigdata and not enough depth, so our group decided to write this blog together to share with everyone the knowledge that we have learned. I know to contribute to enriching Vietnamese IT resources.
 
-Nếu có bất cứ thắc mắc gì hãy liên hệ với chúng mình qua hòm thư trannguyenhan01092000@gmail.com 
+If you have any questions, please contact us via email trannguyenhan01092000@gmail.com or demanejar@gmail.com.

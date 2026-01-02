@@ -10,3 +10,11 @@ Demanejar is a blog about bigdata and things surrounding bigdata. Big data is on
 Big data will be a trend in the coming years, however, there are not enough Vietnamese blogs about Bigdata and not enough depth, so our group decided to write this blog together to share with everyone the knowledge that we have learned. I know to contribute to enriching Vietnamese IT resources.
 
 If you have any questions, please contact us via email trannguyenhan01092000@gmail.com or demanejar@gmail.com.
+
+### Website liên quan
+
+- All service and platform free for developer: [https://demanejar.github.io/freefordev/](https://demanejar.github.io/freefordev/).
+
+- Awesome online earning list website: https://demanejar.github.io/onlineearning/.
+
+- Company Tech Vietnam: name, description, address, website: https://demanejar.github.io/companytechvn/.
